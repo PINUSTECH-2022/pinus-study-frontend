@@ -8,19 +8,31 @@ import { getUserDetailsRequest } from '../requests';
 
 export const ModuleComponent = styled.div`
     cursor: pointer;
-    width: 15vw;
-    height: 8vw;
+    width: 12.5vw; /* 75% of 15vw */
+    height: 7.5vw; /* 75% of 8vw */
     border: none;
     border-radius: 20px;
-    background-color: ${Colors.yellow};
+    background-color: ${Colors.black};
     color: ${Colors.white};
-    font-family: 'Poppins', 'sans-serif';
+    font-family: 'Poppins', sans-serif;
     font-weight: 600;
-    font-size: 1.25em;
-    padding: 0.5vw 1vw 0.5vw 1vw;
+    font-size: 1.2em; /* 75% of 1.25em */
+    padding: 0.5vw 1vw; /* 75% of original padding */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
+
     :hover {
-        background-color: ${Colors.yellow_accent};
-        color: ${Colors.white_accent};
+        background-color: ${Colors.red};
+        color: ${Colors.white};
+    }
+
+    @media (max-width: 768px) {
+        width: 67.5vw; /* 75% of 90vw */
+        height: 9vw; /* 75% of 12vw */
+        font-size: 0.75em; /* 75% of 1em */
+        padding: 0.75vw 1.5vw; /* 75% of original padding */
     }
 `
 
@@ -29,11 +41,21 @@ const MyModulesContainer = styled.div`
     border-radius: 20px;
     width: 17.5vw;
     max-width: 17.5vw;
-    min-height: 70vh;
+    height: 30vh;
     max-height: 70vh;
     padding: 1.5em;
     display: flex;
     flex-direction: column;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    transition: transform 0.2s ease-in-out; /* Add a smooth transition effect */
+    cursor: pointer; /* Add pointer cursor for interactivity */
+
+    &:hover {
+        transform: translateY(-2px); /* Add a slight hover effect */
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add a slightly darker box shadow on hover */
+    }
 `
 
 const MyModulesHeading = styled.span`
@@ -43,14 +65,16 @@ const MyModulesHeading = styled.span`
     font-size: 1.625em;
 `
 
-const MyModulesText = styled.span`
+export const MyModulesText = styled.span`
     padding: 1.25em;
     display: flex;
-    font-family: "Poppins", "sans-serif";
+    justify-content: center; /* Added to center the text horizontally */
+    align-items: center; /* Added to center the text vertically */
+    font-family: "Poppins", sans-serif;
     font-weight: 500;
     font-size: 1.25em;
     font-style: italic;
-`
+`;
 
 const MyModulesChildren = styled.div<{marginTop? : string}>`
     background-color: ${Colors.yellow};
@@ -109,7 +133,8 @@ export const MyModulesGuest = () => {
       <MyModulesHeading>My Modules</MyModulesHeading>
       <MyModulesText>
         <div>
-          <span style={{color: `${Colors.blue}`, cursor: 'pointer'}} onClick={() => dispatch(toggleLogin(true))}>Log in</span> to access your subscribed modules.</div></MyModulesText>
+          <span style={{color: `${Colors.blue}`, cursor: 'pointer'}} onClick={() => dispatch(toggleLogin(true))}>Log in</span> to access your subscribed modules.</div>
+      </MyModulesText>
     </MyModulesContainer>
   );
 }

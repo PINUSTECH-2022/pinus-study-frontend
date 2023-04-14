@@ -18,7 +18,7 @@ const Heading = styled.span`
     font-family: "Poppins", "sans-serif";
     font-weight: 600
     font-size: 2.25em;
-    color: ${Colors.white};
+    color: ${Colors.black};
 `
 
 const PopularModulesWrapper = styled.div`
@@ -26,8 +26,8 @@ const PopularModulesWrapper = styled.div`
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-column-gap: 1em;
     grid-row-gap: 1em;
-    margin-top: 0.5em;
-    margin-bottom: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
 `
 
 const DisplayWrapper = styled.span`
@@ -39,25 +39,33 @@ const DisplayWrapper = styled.span`
 const WelcomeMessage = styled.span`
     background-color: ${Colors.white};
     border-radius: 20px;
-    display: inline-block;
     padding: 1.25em;
     display: flex;
+    align-items: center; /* Add alignment for flexbox */
+    justify-content: center; /* Add alignment for flexbox */
     font-family: 'Poppins', sans-serif;
     font-weight: 500;
-    font-size: 0.75em; 
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
+    font-size: 0.75em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1); /* Add a subtle box shadow */
+    transition: transform 0.2s ease-in-out; /* Add a smooth transition effect */
+    cursor: pointer; /* Add pointer cursor for interactivity */
+
+    &:hover {
+        transform: translateY(-2px); /* Add a slight hover effect */
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Add a slightly darker box shadow on hover */
+    }
 `
 
 const MyModulesDiv = styled.div`
     display: grid;
-    align-items: center;
-    padding: calc(2em + 20px);
+    margin: 1em;
 `
 
 const HomePage = () => {
     const user = useSelector(selectUser);
-    const [modules, setModules] = useState<any[]>([]);
+    const [modules, setModules] = useState<any[]>([{Id: "CS1231"}, {Id: "CS5234"}]);
 
     const isLoggedIn = () => {
         return user.Id !== 0 && user.Token !== "";

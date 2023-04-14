@@ -9,10 +9,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { selectId, selectToken } from "../redux/features/users/userSlice";
 import { selectCreateAccountModal, selectLoginModal, selectSignupModal, toggleCreateAccount, toggleLogin, toggleSignup } from "../redux/features/modal/modal";
 
-// STYLED COMPONENTS
+// STYLED COMPONENT
 
 const NavbarContainer = styled.div`
-    background-color: ${Colors.dark_grey};
+    background-color: ${Colors.black};
     color: white;
     width: calc(100% - 4rem);
     min-width: auto;
@@ -53,21 +53,34 @@ const LoginButton = styled.span`
     padding: 0.6rem 1.6rem;
     font-weight: 500;
     border-radius: 30px;
-    border-color: ${Colors.white};
-    border-width: 1px;
-    border-style: solid;
-    color: ${Colors.white};
+    background-color: ${Colors.white};
+    color: ${Colors.black};
     text-decoration: "none";
+
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    :hover {
+        background-color: ${Colors.light_grey};
+        color: ${Colors.black};
+    }
+
 `;
 
 const SignUpButton = styled.span`
     font-size: 15px;
     padding: 0.6rem 1.6rem;
-    background-color: ${Colors.red};
     font-weight: 500;
     border-radius: 30px;
-    color: white;
+    background-color: ${Colors.red};
+    color: ${Colors.white};
     text-decoration: "none";
+
+    transition: background-color 0.3s ease, color 0.3s ease;
+
+    :hover {
+        background-color: ${Colors.light_black};
+        color: ${Colors.white};
+    }
 `;
 
 const SearchBarContainer = styled.span`
@@ -212,7 +225,7 @@ const NavigationBar = () => {
                         <LoginButton onClick={showLogInModal}>Login</LoginButton>
                     </Link>
                     <Link to="/" style={{ textDecoration: "none" }}>
-                        <SignUpButton onClick={showSignUpModal}>Sign Up</SignUpButton>
+                        <SignUpButton onClick={showSignUpModal}>Signup</SignUpButton>
                     </Link>
                     </>
                 )}

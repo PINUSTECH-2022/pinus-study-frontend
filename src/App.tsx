@@ -2,6 +2,7 @@ import Navbar from "./components/Navbar";
 import Background from "./components/Background";
 import HomePage from "./pages/HomePage";
 import SearchModulesPage from "./pages/SearchModulesPage";
+import { ChakraProvider } from '@chakra-ui/react';
 
 // function TestCORS()
 //   const makeAPICall = async () => {
@@ -26,16 +27,21 @@ import SearchModulesPage from "./pages/SearchModulesPage";
 
 function App() {
     return (
-        <div className="app">
-            <HomePage />
-            <Navbar />
-            {/* <Navbar />
-            <Background>
-                <ThreadComponent threadId={2} type="QUESTION_PAGE" />
-                <br />
-                <ThreadComponent threadId={2} type="MODULE_PAGE" />
-            </Background> */}
-        </div>
+        <ChakraProvider>
+            <div className="app">
+
+                {/* <Navbar />
+                <Background>
+                    <ThreadComponent threadId={2} type="QUESTION_PAGE" />
+                    <br />
+                    <ThreadComponent threadId={2} type="MODULE_PAGE" />
+                </Background> */}
+                    
+                <HomePage />
+                <Navbar />
+
+            </div>
+        </ChakraProvider>
     );
 }
 

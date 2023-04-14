@@ -15,9 +15,12 @@ export const Colors = {
     light_grey_25: "#8F8F8F25",
     light_grey_two: "#D9D9D9", // input background color
     white: "#F5F5F5",
+    pure_white: "#FFFFFF",
     white_accent: "#BDBDBD", // for pressed module threads
     yellow: "#EFB61E",
     yellow_accent: "#c2910e",
+    black: "#000000",
+    light_black: "#444444",
 }
 
 export const API_URL = 'http://localhost:8080';
