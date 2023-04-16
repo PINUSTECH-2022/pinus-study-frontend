@@ -107,7 +107,9 @@ const HomePage = () => {
                             </WelcomeMessage>
                         </DisplayWrapper>
                     </div>
+                    <div>
                     <MyModules />
+                    </div>
                 </HomePageWrapper>
             </Background>
         </div>
