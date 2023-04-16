@@ -93,21 +93,9 @@ const HomePage = () => {
                         <DisplayWrapper>
                             <Heading>Popular Modules</Heading><br></br>
                             <PopularModulesWrapper>
-                                {/* {modules.map(module => (
+                                {modules.map(module => (
                                     <ModuleComponentWrapper key={module.Id} moduleCode={module.Id} />
-                                ))} */}
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
-                                <ModuleComponentWrapper moduleCode="CS2101" />
+                                ))}
                             </PopularModulesWrapper>
                             <Heading>What is PINUS Study?</Heading>
                             <WelcomeMessage>
