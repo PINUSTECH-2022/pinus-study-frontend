@@ -13,6 +13,7 @@ import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
 import ModeCommentOutlinedIcon from "@mui/icons-material/ModeCommentOutlined";
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/ModuleForum";
 import { selectId, selectToken } from "../redux/features/users/userSlice";
@@ -82,6 +83,17 @@ const ContentTitle = styled.span`
 
   ${ScreenSizes.medium_below} {
     font-size: 1em;
+  }
+`;
+
+const EditButton = styled.button`
+  border: none;
+  background-color: ${Colors.blue_3};
+  float: right;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  :hover {
+    background-color: ${Colors.blue_accent};
   }
 `;
 
@@ -492,7 +504,13 @@ const ReviewComponent = ({
       <ReviewContainerDiv>
         <CombinedAuthenticationPage />
         <PostedSince>{parseLastModified(review.Timestamp)}</PostedSince>
-        {
+          {
+            isLoggedIn(token, userId) && review.UserId === userId &&
+            <EditButton>
+              <EditIcon sx={{ fontSize: 'large'}}/>
+            </EditButton>
+          } 
+          {
             isLoggedIn(token, userId) && review.UserId === userId &&
             <DeleteButton onClick={handleDeleteButton}>
               <DeleteIcon sx={{ fontSize: 'large'}}/>
