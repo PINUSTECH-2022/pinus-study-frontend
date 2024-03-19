@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Background from "../components/Background";
 import NavigationBar from "../components/Navbar";
 import { API_URL, Colors, ScreenSizes } from "../constants";
+import { ReviewInitialState } from "../redux/features/reviews/reviewSlice";
 import MyModules from "../components/MyModules";
 import ModuleForum, { Button } from "../components/ModuleForum";
 import ReviewList from "../components/ReviewList";
@@ -124,7 +125,7 @@ const showReviewEditor = () => {
 
   return (
     <div>
-      {openReviewEditor ? <ReviewEditor closeReviewEditor={closeReviewEditor} /> : null}
+      {openReviewEditor ? <ReviewEditor closeReviewEditor={closeReviewEditor} isPost={true} review={ReviewInitialState}/> : null}
       <NavigationBar />
       <Background>
         <ModulePageWrapper>

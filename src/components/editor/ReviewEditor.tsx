@@ -29,6 +29,9 @@ import React, {
   import { TextAlignFormat } from "../../slate";
   import { API_URL, Colors, ScreenSizes } from "../../constants";
   import {
+    Review,
+  } from "../../redux/features/reviews/reviewSlice";
+  import {
     BlurredBackground,
     CloseIconDiv,
     ErrorMessage,
@@ -38,8 +41,8 @@ import React, {
   import { useDispatch, useSelector } from "react-redux";
   import { useParams } from "react-router-dom";
   import { WhiteLoader, SmallWhiteLoader } from "../Loader";
+
   // STYLED COMPONENTS
-  
   const GlobalStyle = createGlobalStyle`
       body {
           font-size: 16px;
@@ -238,14 +241,14 @@ const SelectOption = styled.option`
    * @returns A React component that represents the Text Editor.
    */
 
-    const ReviewEditor = ({ closeReviewEditor }: { closeReviewEditor: () => void }) => {
-    const [workload, setWorkload] = useState("1");
-    const [difficulty, setDifficulty] = useState("1");
-    const [expectedGrade, setExpectedGrade] = useState("");
-    const [actualGrade, setActualGrade] = useState("");
-    const [semesterYear, setSemesterYear] = useState("");
-    const [semesterNum, setSemesterNum] = useState("");
-    const [lecturerName, setLecturerName] = useState("");
+  const ReviewEditor = ({ closeReviewEditor, isPost, review }: { closeReviewEditor: () => void, isPost: boolean, review: Review }) => {
+    const [workload, setWorkload] = useState(review.Workload);
+    const [difficulty, setDifficulty] = useState(review.Difficulty);
+    const [expectedGrade, setExpectedGrade] = useState(review.ExpectedGrade);
+    const [actualGrade, setActualGrade] = useState(review.ActualGrade);
+    const [semesterYear, setSemesterYear] = useState(review.SemesterTaken.slice(0,11));
+    const [semesterNum, setSemesterNum] = useState(review.SemesterTaken.slice(12,14));
+    const [lecturerName, setLecturerName] = useState(review.Lecturer);
     const [generalCommentsData, setGeneralCommentsData] = useState({});
     const [suggestionsData, setSuggestionsData] = useState({});
     const [showError, setShowError] = useState(true);
@@ -281,6 +284,16 @@ const SelectOption = styled.option`
     
       return false;
     };
+
+    const handlePostButtonClick = () => {
+      if (isPost) {
+        console.log("POST");
+        postReview(workload.toString(), difficulty.toString(), semesterYear, semesterNum, generalCommentsData);
+      } else {
+        console.log("EDIT");
+        editReview(workload.toString(), difficulty.toString(), semesterYear, semesterNum, generalCommentsData);
+      }
+    }
   
     const postReview = (
       workload: string,
@@ -300,10 +313,11 @@ const SelectOption = styled.option`
       // const isAnyEmpty= !workload || !difficulty || !semesterYear || !semesterNum || !generalCommentsData;
       // const url = isAnyEmpty ? `${API_URL}/review/${mod}` : `${API_URL}/review/${mod}/${userId}`;
       // const httpMethod = isAnyEmpty ? "POST" : "PUT";
-      const url = `${API_URL}/review/${mod}${userId ? `/${userId}` : ""}`;
-      const httpMethod = userId ? "PUT" : "POST";
-      fetch(url, {
-        method: httpMethod,
+      // const url = `${API_URL}/review/${mod}${userId ? `/${userId}` : ""}`;
+      // const httpMethod = userId ? "PUT" : "POST";
+      // console.log(httpMethod);
+      fetch(API_URL + `/review/` + mod, {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -326,6 +340,57 @@ const SelectOption = styled.option`
         .catch((error) => console.log(error))
         .finally(() => setIsLoading(false));
     };
+
+    const editReview = (
+      workload: string,
+      difficulty: string,
+      semesterYear: string,
+      semesterNum: string,
+      generalCommentsData: any
+    ) => {
+      //in the case of invalid inputs, do nothing.
+      if (isInputInvalid(workload, difficulty, semesterYear, semesterNum, generalCommentsData)) {
+        return;
+      }
+    
+      const stringified = serialize(generalCommentsData);
+      console.log(stringified);
+      setIsLoading(true);
+
+      fetch(API_URL + `/review/` + mod + `/${userId}`, {
+        method: "PUT",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        // body: JSON.stringify({
+        //   workload: 1,
+        //   expected_grade: "A",
+        //   actual_grade: "A",
+        //   difficulty: 2,
+        //   semester_taken: "AY2018/2019 S2",
+        //   lecturer: lecturerName,
+        //   content: "prof",
+        //   suggestion: "prof",
+        // }),
+        body: JSON.stringify({
+          workload: Number(workload),
+          expected_grade: expectedGrade,
+          actual_grade: actualGrade,
+          difficulty: Number(difficulty),
+          semester_taken: semesterYear + " " + semesterNum,
+          lecturer: lecturerName,
+          content: stringified,
+          suggestion: serialize(suggestionsData),
+        }),
+      })
+        .then((response) => response.json())
+        .then(closeReviewEditor)
+        .then(refresh)
+        .catch((error) => console.log(error))
+        .finally(() => {setIsLoading(false); console.log("EDITED")});
+    };
     
   
     const renderElement = useCallback(
@@ -342,7 +407,7 @@ const SelectOption = styled.option`
     };
   
     useEffect(() => {
-      setShowError(isInputInvalid(workload, difficulty, semesterYear, semesterNum, generalCommentsData));
+      setShowError(isInputInvalid(workload.toString(), difficulty.toString(), semesterYear, semesterNum, generalCommentsData));
     }, [workload, difficulty, semesterYear, semesterNum, generalCommentsData]);
   
     return (
@@ -375,6 +440,7 @@ const SelectOption = styled.option`
                         <SelectList
                         value={semesterNum}
                         onChange={(e) => setSemesterNum(e.target.value)}
+                        onClick={() => console.log(semesterNum)}
                         >
                         <SelectOption value="">Select Semester</SelectOption>
                         <SelectOption value="S1">Semester 1</SelectOption>
@@ -388,8 +454,8 @@ const SelectOption = styled.option`
                     type="range"
                     min="1"
                     max="5"
-                    value={difficulty === "" ? "0" : difficulty}
-                    onChange={(e) => setDifficulty(e.target.value)}
+                    value={difficulty}
+                    onChange={(e) => setDifficulty(Number(e.target.value))}
                 />
                 <span style={{ marginLeft: '5px', fontWeight: 600}}>{difficulty}</span>
             </div>
@@ -400,14 +466,14 @@ const SelectOption = styled.option`
                     type="range"
                     min="1"
                     max="5"
-                    value={workload === "" ? "0" : workload}
-                    onChange={(e) => setWorkload(e.target.value)}
+                    value={workload}
+                    onChange={(e) => setWorkload(Number(e.target.value))}
                 />
                 <span style={{ marginLeft: '5px', fontWeight: 600}}>{workload}</span>
             </div>
 
             <div style={{marginBottom:'10px'}}>
-            <InputLabel>Expected Grade </InputLabel>
+            <InputLabel onClick={() => console.log(userId)}>Expected Grade </InputLabel>
                 <SelectList
                     value={expectedGrade}
                     onChange={(e) => setExpectedGrade(e.target.value)}
@@ -595,11 +661,11 @@ const SelectOption = styled.option`
                 <ErrorMessage>Semester Taken, Difficulty, Workload and General Comments cannot be empty.</ErrorMessage>
               )}
               <div>{/* Dummy Div */}</div>
-              <PostButton onClick={() => postReview(workload, difficulty, semesterYear, semesterNum, generalCommentsData)} disabled={isLoading}>
+              <PostButton onClick={handlePostButtonClick} disabled={isLoading}>
                 {
                   isLoading
                   ? <SmallWhiteLoader />
-                  : "Post Review"
+                  : isPost ? "Post Review" : "Edit Review"
                 }
               </PostButton>
             </Buttons>

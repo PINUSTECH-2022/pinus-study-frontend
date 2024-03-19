@@ -527,7 +527,7 @@ const ReviewComponent = ({
     console.log(review)
     return (
       <>
-        {openReviewEditor ? <ReviewEditor closeReviewEditor={closeReviewEditor} /> : null}
+        {openReviewEditor ? <ReviewEditor closeReviewEditor={closeReviewEditor} isPost={false} review={review}/> : null}
         <ReviewContainerDiv>
           <CombinedAuthenticationPage />
           <PostedSince>{parseLastModified(review.Timestamp)}</PostedSince>
