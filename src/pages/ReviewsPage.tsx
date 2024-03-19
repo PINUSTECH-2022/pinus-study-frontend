@@ -94,6 +94,7 @@ const userId = useSelector(selectId);
 const token = useSelector(selectToken);
 const [openReviewEditor, setOpenReviewEditor] = useState(false);
 const [setError, setErrorMessage] = useState<string | null>(null);
+const [review, setReview] = useState<any>(null);
 
 // ...
 

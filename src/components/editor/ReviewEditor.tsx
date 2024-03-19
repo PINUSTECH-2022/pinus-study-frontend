@@ -237,6 +237,7 @@ const SelectOption = styled.option`
    * on the modules page of the forum website. Supports rich text formatting.
    * @returns A React component that represents the Text Editor.
    */
+
     const ReviewEditor = ({ closeReviewEditor }: { closeReviewEditor: () => void }) => {
     const [workload, setWorkload] = useState("1");
     const [difficulty, setDifficulty] = useState("1");
@@ -288,7 +289,7 @@ const SelectOption = styled.option`
       semesterNum: string,
       generalCommentsData: any
     ) => {
-      // if Invalid Input Do Nothing
+      //in the case of invalid inputs, do nothing.
       if (isInputInvalid(workload, difficulty, semesterYear, semesterNum, generalCommentsData)) {
         return;
       }
@@ -296,8 +297,13 @@ const SelectOption = styled.option`
       const stringified = serialize(generalCommentsData);
       console.log(stringified);
       setIsLoading(true);
-      fetch(API_URL + `/review/` + mod, {
-        method: "POST",
+      // const isAnyEmpty= !workload || !difficulty || !semesterYear || !semesterNum || !generalCommentsData;
+      // const url = isAnyEmpty ? `${API_URL}/review/${mod}` : `${API_URL}/review/${mod}/${userId}`;
+      // const httpMethod = isAnyEmpty ? "POST" : "PUT";
+      const url = `${API_URL}/review/${mod}${userId ? `/${userId}` : ""}`;
+      const httpMethod = userId ? "PUT" : "POST";
+      fetch(url, {
+        method: httpMethod,
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -1,11 +1,13 @@
 /* eslint-disable */
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { API_URL, Colors, ScreenSizes } from "../constants";
 import {
   Review,
   ReviewInitialState,
 } from "../redux/features/reviews/reviewSlice";
+import ReviewEditor from "../components/editor/ReviewEditor";
 import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -237,6 +239,7 @@ const ReviewComponent = ({
   //const [status, setStatus] = useState<LikedStatus>("NEUTRAL");
   const [loading, setLoading] = useState<boolean>(false);
   const [isDeleted, setIsDelete] = useState<boolean>(false);
+  const [openReviewEditor, setOpenReviewEditor] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -251,6 +254,28 @@ const ReviewComponent = ({
 
   const handleReviewClick = () => {
     navigate(`/reviews/${review.ModuleId}/${review.UserId}`);
+  };
+
+  const handleEditButton = () => {
+    fetch(API_URL + `/review/${module}/${userId}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.review === null) {
+        setOpenReviewEditor(true);
+        // setErrorMessage(null);
+      } else {
+        // setErrorMessage('You have already reviewed this module.');
+        setOpenReviewEditor(false);
+      }
+    })
+    .catch((error) => {
+      // setErrorMessage('Error during fetch. Please try again.');
+      console.error(error);
+    });
+  };
+
+  const closeReviewEditor = () => {
+    setOpenReviewEditor(false);
   };
 
   const handleDeleteButton = () => {
@@ -501,56 +526,59 @@ const ReviewComponent = ({
   const renderSpecificReviewPageReview = () => {
     console.log(review)
     return (
-      <ReviewContainerDiv>
-        <CombinedAuthenticationPage />
-        <PostedSince>{parseLastModified(review.Timestamp)}</PostedSince>
-          {
-            isLoggedIn(token, userId) && review.UserId === userId &&
-            <EditButton>
-              <EditIcon sx={{ fontSize: 'large'}}/>
-            </EditButton>
-          } 
-          {
-            isLoggedIn(token, userId) && review.UserId === userId &&
-            <DeleteButton onClick={handleDeleteButton}>
-              <DeleteIcon sx={{ fontSize: 'large'}}/>
-            </DeleteButton>
-          }
-        <br />
-        <div><ContentTitle>Semester Taken: </ContentTitle><Content>{(review.SemesterTaken)}</Content></div>
-        <div><ContentTitle>Difficulty: </ContentTitle><Content>{(review.Difficulty)}</Content></div>
-        <div><ContentTitle>Workload: </ContentTitle><Content>{(review.Workload)}</Content></div>
-        <div><ContentTitle>Expected Grade: </ContentTitle><Content>{(review.ExpectedGrade)}</Content></div>
-        <div><ContentTitle>Actual Grade: </ContentTitle><Content>{(review.ActualGrade)}</Content></div>
-        <div><ContentTitle>Lecturer Name: </ContentTitle><Content>{(review.Lecturer)}</Content></div>
-        <div><ContentTitle>General Comments: </ContentTitle><Content>{deserialize(review.Content)}</Content></div>
-        <div><ContentTitle>Suggestions: </ContentTitle><Content>{deserialize(review.Suggestion)}</Content></div>
-        <br />
-        <div style={{textAlign: 'right'}}>
-          <RegularText>
-            Posted by <Username onClick={directToUserPage}>@{review.Username}</Username>
-          </RegularText>
-        </div>
-        {/* <VerticalCenterAlignLayout>
-          <ThumbButton onClick={handleLikeButton}>
-            {status === "LIKED" ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
-          </ThumbButton>
-          <MediumText>&#8196;{likesCount}&#8195;</MediumText>
-          <ThumbButton onClick={handleDislikeButton}>
-            {status === "DISLIKED" ? (
-              <ThumbDownIcon />
-            ) : (
-              <ThumbDownOutlinedIcon />
-            )}
-          </ThumbButton>
-          <MediumText>&#8196;{dislikesCount}&#8195;</MediumText>
-          <ModeCommentOutlinedIcon />
-          <MediumText>&#8196;</MediumText>
-          <ReplyText onClick={isLoggedIn(token, userId) ? openReplyInputField : showLogInModal}>Reply</ReplyText>
-        </VerticalCenterAlignLayout> */}
-      </ReviewContainerDiv>
-    );
-  };
+      <>
+        {openReviewEditor ? <ReviewEditor closeReviewEditor={closeReviewEditor} /> : null}
+        <ReviewContainerDiv>
+          <CombinedAuthenticationPage />
+          <PostedSince>{parseLastModified(review.Timestamp)}</PostedSince>
+            {
+              isLoggedIn(token, userId) && review.UserId === userId &&
+              <EditButton onClick = {handleEditButton}>
+                <EditIcon sx={{ fontSize: 'large'}}/>
+              </EditButton>
+            } 
+            {
+              isLoggedIn(token, userId) && review.UserId === userId &&
+              <DeleteButton onClick={handleDeleteButton}>
+                <DeleteIcon sx={{ fontSize: 'large'}}/>
+              </DeleteButton>
+            }
+          <br />
+          <div><ContentTitle>Semester Taken: </ContentTitle><Content>{(review.SemesterTaken)}</Content></div>
+          <div><ContentTitle>Difficulty: </ContentTitle><Content>{(review.Difficulty)}</Content></div>
+          <div><ContentTitle>Workload: </ContentTitle><Content>{(review.Workload)}</Content></div>
+          <div><ContentTitle>Expected Grade: </ContentTitle><Content>{(review.ExpectedGrade)}</Content></div>
+          <div><ContentTitle>Actual Grade: </ContentTitle><Content>{(review.ActualGrade)}</Content></div>
+          <div><ContentTitle>Lecturer Name: </ContentTitle><Content>{(review.Lecturer)}</Content></div>
+          <div><ContentTitle>General Comments: </ContentTitle><Content>{deserialize(review.Content)}</Content></div>
+          <div><ContentTitle>Suggestions: </ContentTitle><Content>{deserialize(review.Suggestion)}</Content></div>
+          <br />
+          <div style={{textAlign: 'right'}}>
+            <RegularText>
+              Posted by <Username onClick={directToUserPage}>@{review.Username}</Username>
+            </RegularText>
+          </div>
+          {/* <VerticalCenterAlignLayout>
+            <ThumbButton onClick={handleLikeButton}>
+              {status === "LIKED" ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+            </ThumbButton>
+            <MediumText>&#8196;{likesCount}&#8195;</MediumText>
+            <ThumbButton onClick={handleDislikeButton}>
+              {status === "DISLIKED" ? (
+                <ThumbDownIcon />
+              ) : (
+                <ThumbDownOutlinedIcon />
+              )}
+            </ThumbButton>
+            <MediumText>&#8196;{dislikesCount}&#8195;</MediumText>
+            <ModeCommentOutlinedIcon />
+            <MediumText>&#8196;</MediumText>
+            <ReplyText onClick={isLoggedIn(token, userId) ? openReplyInputField : showLogInModal}>Reply</ReplyText>
+          </VerticalCenterAlignLayout> */}
+        </ReviewContainerDiv>
+        </>
+      );
+    };
 
   switch (type) {
     case "SPECIFIC_REVIEW_PAGE":
