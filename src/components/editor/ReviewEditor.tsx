@@ -252,13 +252,13 @@ const SelectOption = styled.option`
     const [generalCommentsData, setGeneralCommentsData] = useState<Descendant[]>([
       {
       type: "",
-      children: [{ text: review.Content.slice(0, review.Content.length - 4)}],
+      children: [{ text: review.Content.replace(/<br>/g, '\n')}],
       },
     ]);
     const [suggestionsData, setSuggestionsData] = useState<Descendant[]>([
       {
         type: "",
-        children: [{ text: review.Suggestion.slice(0, review.Suggestion.length - 4)}],
+        children: [{ text: review.Suggestion.replace(/<br>/g, '\n')}],
       },
     ]);
     const [showError, setShowError] = useState(true);
