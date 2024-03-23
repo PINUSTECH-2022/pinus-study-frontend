@@ -29,7 +29,7 @@ import React, {
   import { TextAlignFormat } from "../../slate";
   import { API_URL, Colors, ScreenSizes } from "../../constants";
   import {
-    Review,
+    Review, ReviewInitialState,
   } from "../../redux/features/reviews/reviewSlice";
   import {
     BlurredBackground,
@@ -242,15 +242,25 @@ const SelectOption = styled.option`
    */
 
   const ReviewEditor = ({ closeReviewEditor, isPost, review }: { closeReviewEditor: () => void, isPost: boolean, review: Review }) => {
-    const [workload, setWorkload] = useState(review.Workload);
-    const [difficulty, setDifficulty] = useState(review.Difficulty);
-    const [expectedGrade, setExpectedGrade] = useState(review.ExpectedGrade);
-    const [actualGrade, setActualGrade] = useState(review.ActualGrade);
-    const [semesterYear, setSemesterYear] = useState(review.SemesterTaken.slice(0,11));
-    const [semesterNum, setSemesterNum] = useState(review.SemesterTaken.slice(12,14));
-    const [lecturerName, setLecturerName] = useState(review.Lecturer);
-    const [generalCommentsData, setGeneralCommentsData] = useState({});
-    const [suggestionsData, setSuggestionsData] = useState({});
+    const [workload, setWorkload] = useState(isPost ? "1" : review.Workload);
+    const [difficulty, setDifficulty] = useState(isPost ? "1" : review.Difficulty);
+    const [expectedGrade, setExpectedGrade] = useState(isPost ? "" : review.ExpectedGrade);
+    const [actualGrade, setActualGrade] = useState(isPost ? "" : review.ActualGrade);
+    const [semesterYear, setSemesterYear] = useState(isPost ? "" : review.SemesterTaken.slice(0,11));
+    const [semesterNum, setSemesterNum] = useState(isPost ? "" : review.SemesterTaken.slice(12,14));
+    const [lecturerName, setLecturerName] = useState(isPost ? "" : review.Lecturer);
+    const [generalCommentsData, setGeneralCommentsData] = useState<Descendant[]>([
+      {
+      type: "",
+      children: [{ text: review.Content.slice(0, review.Content.length - 4)}],
+      },
+    ]);
+    const [suggestionsData, setSuggestionsData] = useState<Descendant[]>([
+      {
+        type: "",
+        children: [{ text: review.Suggestion.slice(0, review.Suggestion.length - 4)}],
+      },
+    ]);
     const [showError, setShowError] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const userId = useSelector(selectId);
@@ -259,7 +269,9 @@ const SelectOption = styled.option`
     const suggestionsEditor = useMemo(() => withHistory(withReact(createEditor())), []);
     const { mod } = useParams<Params>(); // Retrieve Module ID through dynamic routing
     const refresh = () => window.location.reload();
-  
+
+    console.log(initialValue);
+
     const isInputInvalid = (
       workload: string,
       difficulty: string,
@@ -310,12 +322,6 @@ const SelectOption = styled.option`
       const stringified = serialize(generalCommentsData);
       console.log(stringified);
       setIsLoading(true);
-      // const isAnyEmpty= !workload || !difficulty || !semesterYear || !semesterNum || !generalCommentsData;
-      // const url = isAnyEmpty ? `${API_URL}/review/${mod}` : `${API_URL}/review/${mod}/${userId}`;
-      // const httpMethod = isAnyEmpty ? "POST" : "PUT";
-      // const url = `${API_URL}/review/${mod}${userId ? `/${userId}` : ""}`;
-      // const httpMethod = userId ? "PUT" : "POST";
-      // console.log(httpMethod);
       fetch(API_URL + `/review/` + mod, {
         method: "POST",
         headers: {
@@ -364,16 +370,6 @@ const SelectOption = styled.option`
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        // body: JSON.stringify({
-        //   workload: 1,
-        //   expected_grade: "A",
-        //   actual_grade: "A",
-        //   difficulty: 2,
-        //   semester_taken: "AY2018/2019 S2",
-        //   lecturer: lecturerName,
-        //   content: "prof",
-        //   suggestion: "prof",
-        // }),
         body: JSON.stringify({
           workload: Number(workload),
           expected_grade: expectedGrade,
@@ -401,14 +397,14 @@ const SelectOption = styled.option`
       (props: RenderLeafProps) => <Leaf {...props} />,
       []
     );
-  
-    const onChange = (e: React.FormEvent<HTMLInputElement>): void => {
-      setGeneralCommentsData({ text: e.currentTarget.value });
-    };
+    // const onChange = (e: React.FormEvent<HTMLInputElement>): void => {
+    //   setGeneralCommentsData({ text: e.currentTarget.value });
+    // };
   
     useEffect(() => {
       setShowError(isInputInvalid(workload.toString(), difficulty.toString(), semesterYear, semesterNum, generalCommentsData));
     }, [workload, difficulty, semesterYear, semesterNum, generalCommentsData]);
+
   
     return (
       <>
@@ -545,7 +541,7 @@ const SelectOption = styled.option`
             <EditorBackground>
               <Slate
                 editor={generalCommentsEditor}
-                value={initialValue}
+                value={generalCommentsData}
                 onChange={(value) => {
                   const isAstChange = generalCommentsEditor.operations.some(
                     (op) => "set_selection" !== op.type
@@ -602,7 +598,7 @@ const SelectOption = styled.option`
             <EditorBackground>
               <Slate
                 editor={suggestionsEditor}
-                value={initialValue}
+                value={suggestionsData}
                 onChange={(value) => {
                   const isAstChange = suggestionsEditor.operations.some(
                     (op) => "set_selection" !== op.type
@@ -909,6 +905,6 @@ const SelectOption = styled.option`
       children: [{ text: "" }],
     },
   ];
-  
+
   export default ReviewEditor;
   
