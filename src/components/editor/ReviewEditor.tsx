@@ -103,7 +103,7 @@ const SelectOption = styled.option`
     padding: 1em;
     border-radius: 20px;
     overflow-y: auto;
-    max-height: 400px;
+    max-height: 550px;
     box-shadow: 7px 7px 0 ${Colors.green_2},
             7px 7px 0 2px ${Colors.dark_grey};
 
@@ -249,18 +249,21 @@ const SelectOption = styled.option`
     const [semesterYear, setSemesterYear] = useState(isPost ? "" : review.SemesterTaken.slice(0,11));
     const [semesterNum, setSemesterNum] = useState(isPost ? "" : review.SemesterTaken.slice(12,14));
     const [lecturerName, setLecturerName] = useState(isPost ? "" : review.Lecturer);
-    const [generalCommentsData, setGeneralCommentsData] = useState<Descendant[]>([
-      {
-      type: "",
-      children: [{ text: review.Content.replace(/<br>/g, '\n')}],
-      },
-    ]);
-    const [suggestionsData, setSuggestionsData] = useState<Descendant[]>([
-      {
-        type: "",
-        children: [{ text: review.Suggestion.replace(/<br>/g, '\n')}],
-      },
-    ]);
+
+    const textToSlateFormat = (text: string) => {
+      const lines = text.replace(/<p>/g, '')
+                        .replace(/<\/p>/g, '\n')
+                        .replace(/<br>/g, '\n')
+                        .split('\n');
+      const nodes = lines.map(line => ({
+        type: 'paragraph',
+        children: [{ text: line }],
+      }));
+      return nodes.filter(node => node.children[0].text !== '');
+    };
+
+    const [generalCommentsData, setGeneralCommentsData] = useState<Descendant[]>(isPost ? initialValue : textToSlateFormat(review.Content));
+    const [suggestionsData, setSuggestionsData] = useState<Descendant[]>(isPost ? initialValue : textToSlateFormat(review.Suggestion));
     const [showError, setShowError] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const userId = useSelector(selectId);
@@ -556,7 +559,7 @@ const SelectOption = styled.option`
                     <Editable
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
-                        placeholder="General Comments"
+                        // placeholder="General Comments"
                         spellCheck
                         autoFocus
                         onKeyDown={(event) => {
@@ -570,7 +573,7 @@ const SelectOption = styled.option`
                         }}
                         readOnly={isLoading}/>
                 </div>
-                <Toolbar style={{backgroundColor: Colors.light_grey_50}}>
+                {/* <Toolbar style={{backgroundColor: Colors.light_grey_50}}>
                   <MarkButton format="bold" icon="format_bold" />
                   <MarkButton format="italic" icon="format_italic" />
                   <MarkButton format="underline" icon="format_underlined" />
@@ -590,7 +593,7 @@ const SelectOption = styled.option`
                   <BlockButton format="center" icon="format_align_center" />
                   <BlockButton format="right" icon="format_align_right" />
                   <BlockButton format="justify" icon="format_align_justify" />
-                </Toolbar>
+                </Toolbar> */}
               </Slate>
             </EditorBackground>
             
@@ -613,7 +616,7 @@ const SelectOption = styled.option`
                     <Editable
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
-                        placeholder="Suggestions"
+                        // placeholder="Suggestions"
                         spellCheck
                         autoFocus
                         onKeyDown={(event) => {
@@ -629,7 +632,7 @@ const SelectOption = styled.option`
                     />
                 </div>
 
-                <Toolbar style={{backgroundColor: Colors.light_grey_25}}>
+                {/* <Toolbar style={{backgroundColor: Colors.light_grey_25}}>
                   <MarkButton format="bold" icon="format_bold" />
                   <MarkButton format="italic" icon="format_italic" />
                   <MarkButton format="underline" icon="format_underlined" />
@@ -649,7 +652,7 @@ const SelectOption = styled.option`
                   <BlockButton format="center" icon="format_align_center" />
                   <BlockButton format="right" icon="format_align_right" />
                   <BlockButton format="justify" icon="format_align_justify" />
-                </Toolbar>
+                </Toolbar> */}
               </Slate>
             </EditorBackground>
             <Buttons>
