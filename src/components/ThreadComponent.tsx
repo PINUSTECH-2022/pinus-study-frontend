@@ -12,6 +12,7 @@ import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOutlinedIcon from "@mui/icons-material/ThumbDownOutlined";
 import ModeCommentOutlinedIcon from "@mui/icons-material/ModeCommentOutlined";
+import DeleteIcon from '@mui/icons-material/Delete';
 import BookMarkAddIcon from "@mui/icons-material/BookmarkAdd";
 import BookMarkAddedIcon from "@mui/icons-material/BookmarkAdded"
 import ReplyTextEditor from "./editor/ReplyTextEditor";
@@ -70,6 +71,17 @@ const Content = styled.span`
 
   ${ScreenSizes.medium_below} {
     font-size: 1em;
+  }
+`;
+
+const DeleteButton = styled.button`
+  border: none;
+  background-color: ${Colors.blue_3};
+  float: right;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  :hover {
+    background-color: ${Colors.blue_accent};
   }
 `;
 
@@ -222,6 +234,7 @@ const ThreadComponent = ({
   const [status, setStatus] = useState<LikedStatus>("NEUTRAL");
   const [loading, setLoading] = useState<boolean>(false);
   const [bookmarked, setBookmarked] = useState<boolean>(false);
+  const [isDeleted, setIsDelete] = useState<boolean>(false);
   const [showLikersModal, setShowLikersModal] = useState<boolean>(false);
   
   type LikersType = {
@@ -325,6 +338,29 @@ const ThreadComponent = ({
     }
   };
 
+  //r.DELETE("/thread/:threadid", router.DeleteThreadById(db))
+  const handleDeleteButton = () => {
+    fetch(API_URL + `/thread/${threadId}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        token: token,
+        userId: thread.AuthorId
+      }),
+    }).then(response => {
+      if (response.ok) {
+        setIsDelete(true);
+      } else {
+        throw new Error("Failed to delete thread");
+      }
+    })
+    navigate(`/module/${thread.ModuleId}`)
+  }
+
   const handleBookmarkButton = () => {
     if (bookmarked === false) {
       fetch(API_URL + `/bookmark/${threadId}/${userId}`, {
@@ -334,10 +370,6 @@ const ThreadComponent = ({
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          token: token,
-          bookmarked: !bookmarked,
-        }),
       }).then((response) => console.log("success!"));
     } else {
       fetch(`${API_URL}/bookmark/${threadId}/${userId}`, {
@@ -575,6 +607,12 @@ const ThreadComponent = ({
             <BookmarkButton onClick={handleBookmarkButton}>
               {bookmarked === true ? <BookMarkAddedIcon/> : <BookMarkAddIcon/>}
             </BookmarkButton>
+          }
+          {
+           isLoggedIn(token, userId) && thread.AuthorId === userId &&
+          <DeleteButton onClick={handleDeleteButton}>
+            <DeleteIcon sx={{ fontSize: 'x-large'}}/>
+          </DeleteButton>
           }
           <br />
           <RegularText>
