@@ -554,11 +554,12 @@ const SelectOption = styled.option`
                     setGeneralCommentsData(value);
                   }
                 }}
-              >
+                >
                 <div>
-                    <Editable
-                        renderElement={renderElement}
-                        renderLeaf={renderLeaf}
+                  <Editable
+                    style={{minHeight: '100px'}}
+                    renderElement={renderElement}
+                    renderLeaf={renderLeaf}
                         // placeholder="General Comments"
                         spellCheck
                         autoFocus
@@ -600,6 +601,7 @@ const SelectOption = styled.option`
             <InputLabel>Suggestions</InputLabel>
             <EditorBackground>
               <Slate
+              
                 editor={suggestionsEditor}
                 value={suggestionsData}
                 onChange={(value) => {
@@ -614,6 +616,7 @@ const SelectOption = styled.option`
               >
                 <div>
                     <Editable
+                        style={{minHeight: '100px'}}
                         renderElement={renderElement}
                         renderLeaf={renderLeaf}
                         // placeholder="Suggestions"
